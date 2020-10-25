@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "angular-9-registration-login-example": {
+    "user-profile-netways": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -66,18 +66,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "angular-9-registration-login-example:build"
+            "browserTarget": "user-profile-netways:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "angular-9-registration-login-example:build:production"
+              "browserTarget": "user-profile-netways:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "angular-9-registration-login-example:build"
+            "browserTarget": "user-profile-netways:build"
           }
         },
         "test": {
@@ -114,15 +114,19 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "angular-9-registration-login-example:serve"
+            "devServerTarget": "user-profile-netways:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "angular-9-registration-login-example:serve:production"
+              "devServerTarget": "user-profile-netways:serve:production"
             }
           }
         }
       }
-    }},
-  "defaultProject": "angular-9-registration-login-example"
+    }
+  },
+  "defaultProject": "user-profile-netways",
+  "cli": {
+    "analytics": false
+  }
 }

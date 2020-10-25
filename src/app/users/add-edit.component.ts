@@ -1,7 +1,8 @@
-﻿import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit, ChangeDetectorRef, ElementRef, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
+import { DomSanitizer } from '@angular/platform-browser';
 
 import { AccountService, AlertService } from '@app/_services';
 
@@ -12,13 +13,23 @@ export class AddEditComponent implements OnInit {
     isAddMode: boolean;
     loading = false;
     submitted = false;
+    upload: boolean = true;
+    file: any;
+     /*########################## File Upload ########################*/
+  @ViewChild('fileInput') el: ElementRef;
+  imageUrl: any = 'https://demos.creative-tim.com/argon-dashboard/assets/img/theme/team-1.jpg';
+  editFile: boolean = true;
+  removeUpload: boolean = false;
+  imgSrc: any;
 
     constructor(
         private formBuilder: FormBuilder,
         private route: ActivatedRoute,
         private router: Router,
         private accountService: AccountService,
-        private alertService: AlertService
+        private alertService: AlertService,
+        private cd: ChangeDetectorRef,
+        private sanitizer: DomSanitizer
     ) {}
 
     ngOnInit() {
@@ -32,19 +43,29 @@ export class AddEditComponent implements OnInit {
         }
 
         this.form = this.formBuilder.group({
-            firstName: ['', Validators.required],
-            lastName: ['', Validators.required],
-            username: ['', Validators.required],
-            password: ['', passwordValidators]
+            password: ['', passwordValidators],
+            loginName: ['', Validators.required],
+            displayName: ['', Validators.required],
+            dateOfBirth: [''],
+            country: [''],
+            address: ['', Validators.required],
+            isActive: [''],
+            salary: ['', Validators.required],
+            file: [null]
         });
 
         if (!this.isAddMode) {
             this.accountService.getById(this.id)
                 .pipe(first())
                 .subscribe(x => {
-                    this.f.firstName.setValue(x.firstName);
-                    this.f.lastName.setValue(x.lastName);
-                    this.f.username.setValue(x.username);
+                    this.f.loginName.setValue(x.loginName);
+                    this.f.displayName.setValue(x.displayName);
+                    this.f.salary.setValue(x.salary);
+                    this.f.country.setValue(x.country);
+                    this.f.address.setValue(x.address);
+                    this.f.isActive.setValue(x.isActive);
+                    this.f.dateOfBirth.setValue(x.dateOfBirth);
+                    this.imgSrc = x.file;
                 });
         }
     }
@@ -98,4 +119,33 @@ export class AddEditComponent implements OnInit {
                     this.loading = false;
                 });
     }
+
+    uploadFile(event) {
+        let reader = new FileReader(); // HTML5 FileReader API
+        let file = event.target.files[0];
+        if (event.target.files && event.target.files[0]) {
+          reader.readAsDataURL(file);
+
+          // When file uploads set it to file formcontrol
+          reader.onload = () => {
+            this.imageUrl = reader.result;
+            this.f.file.patchValue(reader.result);
+            this.editFile = false;
+            this.removeUpload = true;
+          }
+          // ChangeDetectorRef since file is loading outside the zone
+          this.cd.markForCheck();       
+        }
+        this.upload = false;
+        console.log(event.target.files[0])
+      }
+    
+      // Function to remove uploaded file
+      removeUploadedFile() {
+        let newFileList = Array.from(this.el.nativeElement.files);
+        this.imageUrl = 'https://i.pinimg.com/236x/d6/27/d9/d627d9cda385317de4812a4f7bd922e9--man--iron-man.jpg';
+        this.editFile = true;
+        this.removeUpload = false;
+        this.f.file.patchValue([null]);
+      }
 }
